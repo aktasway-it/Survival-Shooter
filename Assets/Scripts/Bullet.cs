@@ -9,21 +9,49 @@ public class Bullet : MonoBehaviour
     [SerializeField]
     private float _speed = 10f;
 
-    private Rigidbody _rigidbody;
+    [SerializeField]
+    private LayerMask _collisionMask;
 
-    private void Start()
-    {
-        _rigidbody = GetComponent<Rigidbody>();
-    }
+    private Coroutine _deactivateCoroutine;
 
     private void OnEnable()
     {
-        StartCoroutine(DeactivateAfterSeconds(3f));
+        _deactivateCoroutine = StartCoroutine(DeactivateAfterSeconds(3f));
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        _rigidbody.MovePosition(_rigidbody.position + transform.forward * _speed * Time.deltaTime);
+        float moveDistance = _speed * Time.deltaTime;
+        CheckForCollision(moveDistance);
+        transform.Translate(moveDistance * Vector3.forward);
+    }
+
+    private void CheckForCollision(float moveDistance)
+    {
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, moveDistance, _collisionMask, QueryTriggerInteraction.Collide))
+        {
+            OnHit(hit);
+        }
+    }
+
+    private void OnHit(RaycastHit hit)
+    {
+        IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
+        if (damageableObject != null)
+        {
+            damageableObject.TakeHit(10, hit);
+        }
+
+        Dispose();
+    }
+
+    private void Dispose()
+    {
+        StopCoroutine(_deactivateCoroutine);
+        BulletSpawner.Instance.Return(this);
     }
 
     private IEnumerator DeactivateAfterSeconds(float seconds)
@@ -34,6 +62,7 @@ public class Bullet : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-        BulletSpawner.Instance.Return(this);
+
+        Dispose();
     }
 }
