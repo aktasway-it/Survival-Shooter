@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class LivingEntity : MonoBehaviour, IDamageable
 {
+    public event Action onDeath;
+
     public float Health { get; protected set; }
     public bool IsAlive { get { return Health > 0; } }
     
@@ -27,6 +30,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
 
     protected virtual void Die()
     {
+        onDeath?.Invoke();
         Destroy(gameObject);
     }
 }
