@@ -19,7 +19,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
         Health = _startingHealth;
     }
 
-    public void TakeHit(float damage, RaycastHit hit)
+    public void TakeHit(float damage)
     {
         Health -= damage;
         if (Health <= 0)

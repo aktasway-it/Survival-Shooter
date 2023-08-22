@@ -5,9 +5,13 @@ using UnityEngine.AI;
 
 public class Enemy : LivingEntity
 {
+    private bool HasTarget { get { return _target != null; } }
+
     public enum State { Idle, Chasing, Attacking };
     [SerializeField]
     private float _speed = 3f;
+    [SerializeField]
+    private float _damage = 1f;
     [SerializeField]
     private float _refreshPathRate = 1f;
 
@@ -24,6 +28,7 @@ public class Enemy : LivingEntity
 
     private NavMeshAgent _pathfinder;
     private Transform _target;
+    private LivingEntity _targetEntity;
     private Material _skinMaterial;
 
     private State _currentState = State.Chasing;
@@ -35,14 +40,25 @@ public class Enemy : LivingEntity
 
         _pathfinder = GetComponent<NavMeshAgent>();
         _pathfinder.speed = _speed;
-        _target = GameObject.FindGameObjectWithTag("Player").transform;
-        _skinMaterial = GetComponent<Renderer>().material;
 
-        StartCoroutine(UpdatePath());
+        GameObject targetObject = GameObject.FindGameObjectWithTag("Player");
+        if (targetObject != null)
+        {
+            _target = GameObject.FindGameObjectWithTag("Player").transform;
+            _targetEntity = _target.GetComponent<LivingEntity>();
+            _targetEntity.onDeath += OnTargetDeath;
+
+            _skinMaterial = GetComponent<Renderer>().material;
+
+            StartCoroutine(UpdatePath());
+        }
     }
 
     private void Update()
     {
+        if (!HasTarget)
+            return;
+
         UpdateRotation();
         if (CanAttack())
             StartCoroutine(Attack());
@@ -53,9 +69,17 @@ public class Enemy : LivingEntity
         StopAllCoroutines();
     }
 
+    private void OnTargetDeath()
+    {
+        _targetEntity.onDeath -= OnTargetDeath;
+        _target = null;
+        _targetEntity = null;
+        _currentState = State.Idle;
+    }
+
     private void UpdateRotation()
     {
-        if (_target != null && _currentState == State.Chasing)
+        if (!HasTarget && _currentState == State.Chasing)
         {
             Vector3 lookAtDirection = Vector3.Lerp(transform.position + transform.forward, transform.position + _pathfinder.velocity, Time.deltaTime);
             transform.LookAt(lookAtDirection);
@@ -64,7 +88,7 @@ public class Enemy : LivingEntity
 
     private bool CanAttack()
     {
-        if (_target == null || _currentState == State.Attacking)
+        if (!HasTarget || _currentState == State.Attacking)
             return false;
 
         if (Time.time >= _nextAttackTime)
@@ -88,13 +112,23 @@ public class Enemy : LivingEntity
         Color originalColor = _skinMaterial.color;
 
         float percent = 0f;
+        bool hasAppliedDamage = false;
 
         while (percent <= 1f)
         {
+            if (percent >= 0.5f && !hasAppliedDamage)
+            {
+                hasAppliedDamage = true;
+                if (HasTarget)
+                    _targetEntity.TakeHit(_damage);
+            }
+
             percent += Time.deltaTime * _attackSpeed;
             float interpolation = (-Mathf.Pow(percent, 2) + percent) * 4f;
             transform.position = Vector3.Lerp(originalPosition, attackPosition, interpolation);
-            transform.LookAt(_target.position);
+
+            if (HasTarget)
+                transform.LookAt(_target.position);
 
             _skinMaterial.color = Color.Lerp(originalColor, _attackColor, interpolation);
 
@@ -108,22 +142,28 @@ public class Enemy : LivingEntity
     private IEnumerator UpdatePath()
     {
         float timer = _refreshPathRate;
-        while (_target != null)
+        while (HasTarget)
         {
-            if (_currentState != State.Chasing)
-                yield return null;
-
-            while (timer < _refreshPathRate)
+            if (_currentState == State.Chasing)
             {
-                timer += Time.deltaTime;
+                while (timer < _refreshPathRate)
+                {
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
+
+                if (!IsAlive)
+                    yield break;
+
+                if (HasTarget)
+                    _pathfinder.SetDestination(_target.position);
+                    
+                timer = 0f;
+            }
+            else
+            {
                 yield return null;
             }
-
-            if (!IsAlive)
-                yield break;
-
-            _pathfinder.SetDestination(_target.position);
-            timer = 0f;
         }
     }
 }

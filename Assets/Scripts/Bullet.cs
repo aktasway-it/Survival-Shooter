@@ -26,6 +26,15 @@ public class Bullet : MonoBehaviour
         transform.Translate(moveDistance * Vector3.forward);
     }
 
+    private void CheckForCollisionsOnSpawn()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 0.1f, _collisionMask);
+        if (colliders.Length > 0)
+        {
+            OnHit(colliders[0]);
+        }
+    }
+
     private void CheckForCollision(float moveDistance)
     {
         Ray ray = new Ray(transform.position, transform.forward);
@@ -33,16 +42,16 @@ public class Bullet : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, moveDistance, _collisionMask, QueryTriggerInteraction.Collide))
         {
-            OnHit(hit);
+            OnHit(hit.collider);
         }
     }
 
-    private void OnHit(RaycastHit hit)
+    private void OnHit(Collider collider)
     {
-        IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
+        IDamageable damageableObject = collider.GetComponent<IDamageable>();
         if (damageableObject != null)
         {
-            damageableObject.TakeHit(10, hit);
+            damageableObject.TakeHit(10);
         }
 
         Dispose();
@@ -56,6 +65,9 @@ public class Bullet : MonoBehaviour
 
     private IEnumerator DeactivateAfterSeconds(float seconds)
     {
+        yield return null;
+        CheckForCollisionsOnSpawn();
+
         float timer = 0f;
         while (timer < seconds)
         {
