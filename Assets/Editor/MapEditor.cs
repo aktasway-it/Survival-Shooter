@@ -7,8 +7,6 @@ public class MapEditor : Editor {
         base.OnInspectorGUI();
         
         MapGenerator map = target as MapGenerator;
-        if (GUILayout.Button("Generate Map")) {
-            map.GenerateMap();
-        }
+        map.GenerateMap();
     }
 }
