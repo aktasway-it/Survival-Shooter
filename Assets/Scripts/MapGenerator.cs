@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using Unity.AI.Navigation;
 using UnityEngine;
 
@@ -84,6 +85,9 @@ public class MapGenerator : MonoBehaviour
     [SerializeField]
     private int _currentMapIndex;
 
+    [SerializeField]
+    private Cinemachine.CinemachineVirtualCamera _cinemachineVirtualCamera;
+
     private List<Coord> _allTileCoords;
     private Queue<Coord> _shuffledTileCoords;
 
@@ -158,7 +162,8 @@ public class MapGenerator : MonoBehaviour
         _navMeshSurface.transform.localScale = new Vector3(_currentMap.mapSize.x * _tileSize, 1, _currentMap.mapSize.y * _tileSize);
         _navMeshSurface.BuildNavMesh();
 
-        Camera.main.orthographicSize = Mathf.Max(_currentMap.mapSize.x, _currentMap.mapSize.y) / 2f * _tileSize;
+        CinemachineFramingTransposer transposer = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+        transposer.m_CameraDistance = _currentMap.mapSize.x * _tileSize * 0.5f;
     }
 
     private bool IsMapFullyAccessible(bool[,] obstacleMap, int currentObstacleCount)
