@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
@@ -8,62 +9,6 @@ using Random = System.Random;
 
 public class MapGenerator : MonoBehaviour
 {
-    [System.Serializable]
-    public struct Coord 
-    {
-        public int x;
-        public int y;
-
-        public Coord(int x, int y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-
-        public static bool operator ==(Coord c1, Coord c2)
-        {
-            return c1.x == c2.x && c1.y == c2.y;
-        }
-
-        public static bool operator !=(Coord c1, Coord c2)
-        {
-            return !(c1 == c2);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Coord)
-            {
-                Coord c = (Coord)obj;
-                return this == c;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public override int GetHashCode()
-        {
-            return x ^ y;
-        }
-    }
-
-    [System.Serializable]
-    public class Map
-    {
-        public Coord mapSize;
-        [Range(0, 1)]
-        public float obstaclePercent;
-        public int seed;
-        public float minObstacleHeight;
-        public float maxObstacleHeight;
-        public Color foregroundColor;
-        public Color backgroundColor;
-        
-        public Coord PlayerSpawnCoord => new Coord(mapSize.x / 2, mapSize.y / 2);
-    }
-
     [SerializeField]
     private Transform _tilePrefab;
 
@@ -86,9 +31,9 @@ public class MapGenerator : MonoBehaviour
     private int _currentMapIndex;
 
     [SerializeField]
-    private Cinemachine.CinemachineVirtualCamera _cinemachineVirtualCamera;
+    private CinemachineVirtualCamera _cinemachineVirtualCamera;
 
-    private List<Coord> _allTileCoords;
+    private Dictionary<Coord, MapTile> _tileMap;
     private Queue<Coord> _shuffledTileCoords;
 
     private Map _currentMap;
@@ -100,6 +45,7 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap()
     {
+        // Generate a new map and destroy old one if it exists
         _currentMap = _maps[_currentMapIndex];
         Random random = new Random(_maps[_currentMapIndex].seed);
 
@@ -109,7 +55,7 @@ public class MapGenerator : MonoBehaviour
             DestroyImmediate(oldMap.gameObject);
         }
 
-        _allTileCoords = new List<Coord>();
+        _tileMap = new Dictionary<Coord, MapTile>();
         GameObject mapHolder = new GameObject("Generated Map");
         mapHolder.transform.parent = transform;
 
@@ -122,22 +68,23 @@ public class MapGenerator : MonoBehaviour
                 newTile.localScale = Vector3.one * (1 - _outlinePercent) * _tileSize;
                 newTile.parent = mapHolder.transform;
 
-                _allTileCoords.Add(new Coord(x, y));
+                MapTile mapTile = new MapTile(MapTile.Type.Empty, newTile);
+                _tileMap.Add(new Coord(x, y), mapTile);
             }
         }
 
-        _shuffledTileCoords = new Queue<Coord>(Utility.ShuffleList(_allTileCoords.ToArray(), _currentMap.seed));
+        // Generate obstacles
+        _shuffledTileCoords = new Queue<Coord>(Utility.ShuffleList(_tileMap.Keys.ToList(), _currentMap.seed));
         int obstacleCount = Mathf.RoundToInt(_currentMap.mapSize.x * _currentMap.mapSize.y * _currentMap.obstaclePercent);
-        bool[,] obstacleMap = new bool[_currentMap.mapSize.x, _currentMap.mapSize.y];
-        int currentObstacleCount = 0;
 
         for (int i = 0; i < obstacleCount; i++)
         {
+            // Get a random tile where to place an obstacle
             Coord randomCoord = GetRandomCoord();
-            obstacleMap[randomCoord.x, randomCoord.y] = true;
-            currentObstacleCount++;
+            _tileMap[randomCoord].TileType = MapTile.Type.Obstacle;
 
-            if (randomCoord != _currentMap.PlayerSpawnCoord && IsMapFullyAccessible(obstacleMap, currentObstacleCount))
+            // If the random tile is not the player spawn tile and the map is fully accessible, place an obstacle
+            if (randomCoord != _currentMap.PlayerSpawnCoord && IsMapFullyAccessible())
             {
                 Vector3 obstaclePosition = CoordToPosition(randomCoord.x, randomCoord.y);
                 float obstacleHeight = Mathf.Lerp(_currentMap.minObstacleHeight, _currentMap.maxObstacleHeight, (float) random.NextDouble());
@@ -152,26 +99,34 @@ public class MapGenerator : MonoBehaviour
                 obstacleMaterial.color = Color.Lerp(_currentMap.foregroundColor, _currentMap.backgroundColor, colorPercent);
                 obstacleRenderer.sharedMaterial = obstacleMaterial;
             }
+            // Otherwise, remove the obstacle
             else
             {
-                obstacleMap[randomCoord.x, randomCoord.y] = false;
-                currentObstacleCount--;
+                _tileMap[randomCoord].TileType = MapTile.Type.Empty;
             }            
         }
 
+        // Build nav mesh for enemies
         _navMeshSurface.transform.localScale = new Vector3(_currentMap.mapSize.x * _tileSize, 1, _currentMap.mapSize.y * _tileSize);
         _navMeshSurface.BuildNavMesh();
 
+        // Set camera distance
         CinemachineFramingTransposer transposer = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         transposer.m_CameraDistance = _currentMap.mapSize.x * _tileSize * 0.5f;
     }
 
-    private bool IsMapFullyAccessible(bool[,] obstacleMap, int currentObstacleCount)
+    /**
+     * Check if the map is fully accessible by the player using a flood fill algorithm
+     */
+    private bool IsMapFullyAccessible()
     {
-        bool[,] mapFlags = new bool[obstacleMap.GetLength(0), obstacleMap.GetLength(1)];
+        bool[,] mapFlags = new bool[_currentMap.mapSize.x, _currentMap.mapSize.y];
+
         Queue<Coord> queue = new Queue<Coord>();
         queue.Enqueue(_currentMap.PlayerSpawnCoord);
+
         mapFlags[_currentMap.PlayerSpawnCoord.x, _currentMap.PlayerSpawnCoord.y] = true;
+        Coord currentTileCoord = _currentMap.PlayerSpawnCoord;
         int accessibleTileCount = 1;
 
         while (queue.Count > 0)
@@ -184,7 +139,10 @@ public class MapGenerator : MonoBehaviour
                 {
                     if (IsInMapRange(x, y) && (y == tile.y || x == tile.x))
                     {
-                        if (!mapFlags[x, y] && !obstacleMap[x, y])
+                        currentTileCoord.x = x;
+                        currentTileCoord.y = y;
+
+                        if (!mapFlags[x, y] && _tileMap[currentTileCoord].TileType != MapTile.Type.Obstacle)
                         {
                             mapFlags[x, y] = true;
                             queue.Enqueue(new Coord(x, y));
@@ -195,7 +153,8 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        int targetAccessibleTileCount = (int)(_currentMap.mapSize.x * _currentMap.mapSize.y - currentObstacleCount);
+        int obstacleCount = _tileMap.Count(tile => tile.Value.TileType == MapTile.Type.Obstacle);
+        int targetAccessibleTileCount = (int)(_currentMap.mapSize.x * _currentMap.mapSize.y - obstacleCount);
         return targetAccessibleTileCount == accessibleTileCount;
     }
 
@@ -204,12 +163,12 @@ public class MapGenerator : MonoBehaviour
         return x >= 0 && x < _currentMap.mapSize.x && y >= 0 && y < _currentMap.mapSize.y;
     }
 
-    public Vector3 CoordToPosition(int x, int y)
+    private Vector3 CoordToPosition(int x, int y)
     {
         return new Vector3(-_currentMap.mapSize.x / 2f + 0.5f + x, 0, -_currentMap.mapSize.y / 2f + 0.5f + y) * _tileSize;
     }
 
-    public Coord GetRandomCoord()
+    private Coord GetRandomCoord()
     {
         Coord randomCoord = _shuffledTileCoords.Dequeue();
         _shuffledTileCoords.Enqueue(randomCoord);
