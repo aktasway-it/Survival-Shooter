@@ -73,6 +73,9 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
+        // Set player spawn tile
+        _tileMap[_currentMap.PlayerSpawnCoord].TileType = MapTile.Type.PlayerSpawn;
+
         // Generate obstacles
         _shuffledTileCoords = new Queue<Coord>(Utility.ShuffleList(_tileMap.Keys.ToList(), _currentMap.seed));
         int obstacleCount = Mathf.RoundToInt(_currentMap.mapSize.x * _currentMap.mapSize.y * _currentMap.obstaclePercent);
@@ -80,29 +83,33 @@ public class MapGenerator : MonoBehaviour
         for (int i = 0; i < obstacleCount; i++)
         {
             // Get a random tile where to place an obstacle
-            Coord randomCoord = GetRandomCoord();
-            _tileMap[randomCoord].TileType = MapTile.Type.Obstacle;
+            MapTile randomTile = GetRandomTile(MapTile.Type.Empty);
+            randomTile.TileType = MapTile.Type.Obstacle;
 
             // If the random tile is not the player spawn tile and the map is fully accessible, place an obstacle
-            if (randomCoord != _currentMap.PlayerSpawnCoord && IsMapFullyAccessible())
+            if (IsMapFullyAccessible())
             {
-                Vector3 obstaclePosition = CoordToPosition(randomCoord.x, randomCoord.y);
+                Vector3 obstaclePosition = randomTile.transform.position;
                 float obstacleHeight = Mathf.Lerp(_currentMap.minObstacleHeight, _currentMap.maxObstacleHeight, (float) random.NextDouble());
                 Transform newObstacle = Instantiate(_obstaclePrefab, obstaclePosition + Vector3.up * (obstacleHeight * 0.5f - _outlinePercent * 0.5f * _tileSize), Quaternion.identity) as Transform;
+                
                 float obstacleXZ = (1 - _outlinePercent) * _tileSize;
                 newObstacle.localScale = new Vector3(obstacleXZ, obstacleHeight, obstacleXZ);
                 newObstacle.parent = mapHolder.transform;
 
                 Renderer obstacleRenderer = newObstacle.GetComponent<Renderer>();
                 Material obstacleMaterial = new Material(obstacleRenderer.sharedMaterial);
-                float colorPercent = randomCoord.y / (float) _currentMap.mapSize.y;
+
+                Coord obstacleCoord = PositionToCoord(obstaclePosition);
+                float colorPercent = obstacleCoord.y / (float) _currentMap.mapSize.y;
+
                 obstacleMaterial.color = Color.Lerp(_currentMap.foregroundColor, _currentMap.backgroundColor, colorPercent);
                 obstacleRenderer.sharedMaterial = obstacleMaterial;
             }
             // Otherwise, remove the obstacle
             else
             {
-                _tileMap[randomCoord].TileType = MapTile.Type.Empty;
+                randomTile.TileType = MapTile.Type.Empty;
             }            
         }
 
@@ -166,6 +173,23 @@ public class MapGenerator : MonoBehaviour
     private Vector3 CoordToPosition(int x, int y)
     {
         return new Vector3(-_currentMap.mapSize.x / 2f + 0.5f + x, 0, -_currentMap.mapSize.y / 2f + 0.5f + y) * _tileSize;
+    }
+
+    private Coord PositionToCoord(Vector3 position)
+    {
+        return new Coord(Mathf.RoundToInt(position.x / _tileSize + (_currentMap.mapSize.x - 1) / 2f), Mathf.RoundToInt(position.z / _tileSize + (_currentMap.mapSize.y - 1) / 2f));
+    }
+
+    private MapTile GetRandomTile(MapTile.Type type)
+    {
+        while (true)
+        {
+            Coord randomCoord = GetRandomCoord();
+            if (_tileMap[randomCoord].TileType == type)
+            {
+                return _tileMap[randomCoord];
+            }
+        }
     }
 
     private Coord GetRandomCoord()
