@@ -9,6 +9,8 @@ using Random = System.Random;
 
 public class MapGenerator : MonoBehaviour
 {
+    public static MapGenerator Instance { get; private set; }
+
     [SerializeField]
     private Transform _tilePrefab;
 
@@ -37,6 +39,11 @@ public class MapGenerator : MonoBehaviour
     private Queue<Coord> _shuffledTileCoords;
 
     private Map _currentMap;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -180,7 +187,7 @@ public class MapGenerator : MonoBehaviour
         return new Coord(Mathf.RoundToInt(position.x / _tileSize + (_currentMap.mapSize.x - 1) / 2f), Mathf.RoundToInt(position.z / _tileSize + (_currentMap.mapSize.y - 1) / 2f));
     }
 
-    private MapTile GetRandomTile(MapTile.Type type)
+    public MapTile GetRandomTile(MapTile.Type type)
     {
         while (true)
         {
@@ -198,5 +205,4 @@ public class MapGenerator : MonoBehaviour
         _shuffledTileCoords.Enqueue(randomCoord);
         return randomCoord;
     }
-
 }

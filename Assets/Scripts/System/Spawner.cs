@@ -9,6 +9,7 @@ public class Spawner : MonoBehaviour
     {
         public int enemyCount;
         public float timeBetweenSpawns;
+        public float spawnDelay;
         public Enemy enemyPrefab;
     }
 
@@ -30,17 +31,28 @@ public class Spawner : MonoBehaviour
     {
         if (_enemyRemainingToSpawn > 0 && Time.time >= _timeToNextSpawn)
         {
-            SpawnEnemy();
+            StartCoroutine(SpawnEnemy());
         }
     }
 
-    private void SpawnEnemy()
+    private IEnumerator SpawnEnemy()
     {
         _enemyRemainingToSpawn--;
-        _timeToNextSpawn = Time.time + _currentWave.timeBetweenSpawns;
+        _timeToNextSpawn = Time.time + _currentWave.timeBetweenSpawns + _currentWave.spawnDelay;
 
-        Enemy spawnedEnemy = Instantiate(_currentWave.enemyPrefab, transform.position, transform.rotation);
+        MapTile spawnTile = MapGenerator.Instance.GetRandomTile(MapTile.Type.Empty);
+        spawnTile.SetBlinkAnimationRunning(true);
+        
+        float spawnDelay = _currentWave.spawnDelay;
+        while (spawnDelay > 0)
+        {
+            spawnDelay -= Time.deltaTime;
+            yield return null;
+        }
+
+        Enemy spawnedEnemy = Instantiate(_currentWave.enemyPrefab, spawnTile.transform.position, Quaternion.identity);
         spawnedEnemy.onDeath += OnEnemyDeath;
+        spawnTile.SetBlinkAnimationRunning(false);
     }
 
     private void NextWave()
