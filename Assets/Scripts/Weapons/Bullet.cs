@@ -31,7 +31,7 @@ public class Bullet : MonoBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, 0.1f, _collisionMask);
         if (colliders.Length > 0)
         {
-            OnHit(colliders[0]);
+            OnHit(colliders[0], transform.position);
         }
     }
 
@@ -42,16 +42,16 @@ public class Bullet : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, moveDistance, _collisionMask, QueryTriggerInteraction.Collide))
         {
-            OnHit(hit.collider);
+            OnHit(hit.collider, hit.point);
         }
     }
 
-    private void OnHit(Collider collider)
+    private void OnHit(Collider collider, Vector3 hitPoint)
     {
         IDamageable damageableObject = collider.GetComponent<IDamageable>();
         if (damageableObject != null)
         {
-            damageableObject.TakeHit(10);
+            damageableObject.TakeHit(10, hitPoint, transform.forward);
         }
 
         Dispose();

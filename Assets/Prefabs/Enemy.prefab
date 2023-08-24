@@ -123,11 +123,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingHealth: 5
+  _deathEffectPrefab: {fileID: 5463736377445048061, guid: 3d51eccc45a15e5459b84f2f4889eb25, type: 3}
   _speed: 3
+  _damage: 1
   _refreshPathRate: 0.25
   _attackDistanceThreshold: 1.6
   _timeBetweenAttacks: 1
   _attackSpeed: 3
+  _attackColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!195 &6694743064097384908
 NavMeshAgent:
   m_ObjectHideFlags: 0

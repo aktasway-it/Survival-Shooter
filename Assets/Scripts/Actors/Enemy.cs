@@ -120,7 +120,7 @@ public class Enemy : LivingEntity
             {
                 hasAppliedDamage = true;
                 if (HasTarget)
-                    _targetEntity.TakeHit(_damage);
+                    _targetEntity.TakeHit(_damage, _targetEntity.transform.position, transform.forward);
             }
 
             percent += Time.deltaTime * _attackSpeed;

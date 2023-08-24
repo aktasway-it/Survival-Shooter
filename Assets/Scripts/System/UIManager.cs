@@ -20,6 +20,7 @@ public class UIManager : SingletonBehavior<UIManager>
 
     private IEnumerator ShowGameOverScreenCoroutine()
     {
+        yield return new WaitForSeconds(2);
         _gameOverCanvasGroup.gameObject.SetActive(true);
         _gameOverCanvasGroup.interactable = true;
         _gameOverCanvasGroup.blocksRaycasts = true;
