@@ -39,5 +39,8 @@ public class GameManager : SingletonBehavior<GameManager>
     private void OnPlayerDeath()
     {
         Player.OnDeath -= OnPlayerDeath;
+        EnemySpawner.OnNewWave -= OnNewWave;
+
+        UIManager.Instance.ShowGameOverScreen();
     }
 }
