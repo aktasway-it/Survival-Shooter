@@ -1,10 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : SingletonBehavior<EnemySpawner>
 {
-    [System.Serializable]
+    public static event Action<int> OnNewWave;
+
+    [Serializable]
     public class Wave
     {
         public int enemyCount;
@@ -17,7 +20,7 @@ public class EnemySpawner : MonoBehaviour
     private Wave[] _waves;
 
     private Wave _currentWave;
-    private int _currentWaveIndex;
+    private int _currentWaveIndex = -1;
     private int _enemyRemainingToSpawn;
     private int _enemyRemainingAlive;
     private float _timeToNextSpawn;
@@ -55,20 +58,22 @@ public class EnemySpawner : MonoBehaviour
         }
 
         Enemy spawnedEnemy = Instantiate(_currentWave.enemyPrefab, spawnTile.transform.position, Quaternion.identity);
-        spawnedEnemy.onDeath += OnEnemyDeath;
+        spawnedEnemy.OnDeath += OnEnemyDeath;
         spawnTile.SetBlinkAnimationRunning(false);
     }
 
     private void NextWave()
     {
         _currentWaveIndex++;
-        if (_currentWaveIndex - 1 < _waves.Length)
+        if (_currentWaveIndex < _waves.Length)
         {
             Debug.Log("Next Wave: " + _currentWaveIndex);
-            _currentWave = _waves[_currentWaveIndex - 1];
+            _currentWave = _waves[_currentWaveIndex];
             _enemyRemainingToSpawn = _currentWave.enemyCount;
             _enemyRemainingAlive = _enemyRemainingToSpawn;
             _timeToNextSpawn = 0;
+
+            OnNewWave?.Invoke(_currentWaveIndex);
         }
     }
 

@@ -7,9 +7,9 @@ using UnityEngine;
 
 using Random = System.Random;
 
-public class MapGenerator : MonoBehaviour
+public class MapGenerator : SingletonBehavior<MapGenerator>
 {
-    public static MapGenerator Instance { get; private set; }
+    public Coord WorldSize => _currentMap.mapSize * Mathf.CeilToInt(_tileSize);
 
     [SerializeField]
     private Transform _tilePrefab;
@@ -32,22 +32,16 @@ public class MapGenerator : MonoBehaviour
     [SerializeField]
     private int _currentMapIndex;
 
-    [SerializeField]
-    private CinemachineVirtualCamera _cinemachineVirtualCamera;
-
     private Dictionary<Coord, MapTile> _tileMap;
     private Queue<Coord> _shuffledTileCoords;
 
     private Map _currentMap;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
 
-    public void GenerateMap()
+    public void GenerateMap(int mapIndex = 0)
     {
         // Generate a new map and destroy old one if it exists
+        _currentMapIndex = mapIndex;
         _currentMap = _maps[_currentMapIndex];
         Random random = new Random(_maps[_currentMapIndex].seed);
 
@@ -118,10 +112,6 @@ public class MapGenerator : MonoBehaviour
         // Build nav mesh for enemies
         _navMeshSurface.transform.localScale = new Vector3(_currentMap.mapSize.x * _tileSize, 1, _currentMap.mapSize.y * _tileSize);
         _navMeshSurface.BuildNavMesh();
-
-        // Set camera distance
-        CinemachineFramingTransposer transposer = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
-        transposer.m_CameraDistance = _currentMap.mapSize.x * _tileSize * 0.5f;
     }
 
     /**

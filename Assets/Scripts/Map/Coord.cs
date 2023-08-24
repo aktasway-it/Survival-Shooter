@@ -24,6 +24,21 @@ using UnityEngine;
             return !(c1 == c2);
         }
 
+        public static Coord operator +(Coord c1, Coord c2)
+        {
+            return new Coord(c1.x + c2.x, c1.y + c2.y);
+        }
+
+        public static Coord operator -(Coord c1, Coord c2)
+        {
+            return new Coord(c1.x - c2.x, c1.y - c2.y);
+        }
+
+        public static Coord operator *(Coord c1, int i)
+        {
+            return new Coord(c1.x * i, c1.y * i);
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is Coord)

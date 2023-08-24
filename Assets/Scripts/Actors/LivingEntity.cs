@@ -5,7 +5,7 @@ using UnityEngine;
 
 public abstract class LivingEntity : MonoBehaviour, IDamageable
 {
-    public event Action onDeath;
+    public event Action OnDeath;
 
     public float Health { get; protected set; }
     public bool IsAlive { get { return Health > 0; } }
@@ -30,7 +30,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
 
     protected virtual void Die()
     {
-        onDeath?.Invoke();
+        OnDeath?.Invoke();
         Destroy(gameObject);
     }
 }

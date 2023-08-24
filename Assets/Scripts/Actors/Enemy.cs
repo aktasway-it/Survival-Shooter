@@ -46,7 +46,7 @@ public class Enemy : LivingEntity
         {
             _target = GameObject.FindGameObjectWithTag("Player").transform;
             _targetEntity = _target.GetComponent<LivingEntity>();
-            _targetEntity.onDeath += OnTargetDeath;
+            _targetEntity.OnDeath += OnTargetDeath;
 
             _skinMaterial = GetComponent<Renderer>().material;
 
@@ -71,7 +71,7 @@ public class Enemy : LivingEntity
 
     private void OnTargetDeath()
     {
-        _targetEntity.onDeath -= OnTargetDeath;
+        _targetEntity.OnDeath -= OnTargetDeath;
         _target = null;
         _targetEntity = null;
         _currentState = State.Idle;
