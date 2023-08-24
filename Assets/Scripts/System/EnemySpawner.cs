@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spawner : MonoBehaviour
+public class EnemySpawner : MonoBehaviour
 {
     [System.Serializable]
     public class Wave
@@ -22,14 +22,14 @@ public class Spawner : MonoBehaviour
     private int _enemyRemainingAlive;
     private float _timeToNextSpawn;
 
-    private void Start()
+    public void StartSpawning()
     {
         NextWave();
     }
 
     private void Update()
     {
-        if (_enemyRemainingToSpawn > 0 && Time.time >= _timeToNextSpawn)
+        if (GameManager.Instance.Player.IsAlive && _enemyRemainingToSpawn > 0 && Time.time >= _timeToNextSpawn)
         {
             StartCoroutine(SpawnEnemy());
         }
@@ -40,9 +40,13 @@ public class Spawner : MonoBehaviour
         _enemyRemainingToSpawn--;
         _timeToNextSpawn = Time.time + _currentWave.timeBetweenSpawns + _currentWave.spawnDelay;
 
-        MapTile spawnTile = MapGenerator.Instance.GetRandomTile(MapTile.Type.Empty);
-        spawnTile.SetBlinkAnimationRunning(true);
+        bool isPlayerCamping = GameManager.Instance.Player.IsCamping;
+        MapTile spawnTile = isPlayerCamping ?
+            MapGenerator.Instance.GetTile(GameManager.Instance.Player.transform.position) :
+            MapGenerator.Instance.GetRandomTile(MapTile.Type.Empty);
         
+        spawnTile.SetBlinkAnimationRunning(true);
+
         float spawnDelay = _currentWave.spawnDelay;
         while (spawnDelay > 0)
         {

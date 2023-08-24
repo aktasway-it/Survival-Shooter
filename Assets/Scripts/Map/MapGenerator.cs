@@ -45,11 +45,6 @@ public class MapGenerator : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-        GenerateMap();
-    }
-
     public void GenerateMap()
     {
         // Generate a new map and destroy old one if it exists
@@ -184,7 +179,10 @@ public class MapGenerator : MonoBehaviour
 
     private Coord PositionToCoord(Vector3 position)
     {
-        return new Coord(Mathf.RoundToInt(position.x / _tileSize + (_currentMap.mapSize.x - 1) / 2f), Mathf.RoundToInt(position.z / _tileSize + (_currentMap.mapSize.y - 1) / 2f));
+        Coord coord = new Coord(Mathf.RoundToInt(position.x / _tileSize + (_currentMap.mapSize.x - 1) / 2f), Mathf.RoundToInt(position.z / _tileSize + (_currentMap.mapSize.y - 1) / 2f));
+        coord.x = Mathf.Clamp(coord.x, 0, _currentMap.mapSize.x - 1);
+        coord.y = Mathf.Clamp(coord.y, 0, _currentMap.mapSize.y - 1);
+        return coord;
     }
 
     public MapTile GetRandomTile(MapTile.Type type)
@@ -197,6 +195,17 @@ public class MapGenerator : MonoBehaviour
                 return _tileMap[randomCoord];
             }
         }
+    }
+
+    public MapTile GetTile(Coord coord)
+    {
+        return _tileMap[coord];
+    }
+
+    public MapTile GetTile(Vector3 worldPosition)
+    {
+        Coord coord = PositionToCoord(worldPosition);
+        return _tileMap[coord];
     }
 
     private Coord GetRandomCoord()

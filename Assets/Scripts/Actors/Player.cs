@@ -7,24 +7,44 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(GunController))]
 public class Player : LivingEntity
 {
+    public bool IsCamping { get; private set; }
+
     private PlayerController _controller;
     private GunController _gunController;
 
     private Camera _mainCamera;
     private bool _isShooting;
+    private float _campingCheckTimer;
+    private Vector3 _lastCampingCheckPosition;
 
-    private void Awake()
+    protected override void Start()
     {
+        base.Start();
+
         _controller = GetComponent<PlayerController>();
         _gunController = GetComponent<GunController>();
         _mainCamera = Camera.main;
+
+        _lastCampingCheckPosition = transform.position;
     }
 
     private void Update()
     {
+        CheckCamping();
         UpdateRotation();
         if (_isShooting)
             _gunController.Shoot();
+    }
+
+    private void CheckCamping()
+    {
+        _campingCheckTimer += Time.deltaTime;
+        if (_campingCheckTimer > 3f)
+        {
+            _campingCheckTimer = 0;
+            IsCamping = (_lastCampingCheckPosition - transform.position).sqrMagnitude < 4;
+            _lastCampingCheckPosition = transform.position;
+        }
     }
 
     private void UpdateRotation()
