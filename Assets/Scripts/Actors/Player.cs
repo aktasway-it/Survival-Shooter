@@ -39,7 +39,7 @@ public class Player : LivingEntity
         if (_campingCheckTimer > 3f)
         {
             _campingCheckTimer = 0;
-            IsCamping = (_lastCampingCheckPosition - transform.position).sqrMagnitude < 4;
+            IsCamping = (_lastCampingCheckPosition - transform.position).sqrMagnitude < 2;
             _lastCampingCheckPosition = transform.position;
         }
     }

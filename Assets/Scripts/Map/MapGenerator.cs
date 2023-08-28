@@ -40,8 +40,13 @@ public class MapGenerator : SingletonBehavior<MapGenerator>
 
     public void GenerateMap(int mapIndex = 0)
     {
-        // Generate a new map and destroy old one if it exists
         _currentMapIndex = mapIndex;
+        GenerateMap();
+    }
+
+    public void GenerateMap()
+    {
+        // Generate a new map and destroy old one if it exists
         _currentMap = _maps[_currentMapIndex];
         Random random = new Random(_maps[_currentMapIndex].seed);
 

@@ -50,23 +50,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3606563526451448654, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: m_Name
-      value: Enemy Level 1
+      value: Enemy Level 3
       objectReference: {fileID: 0}
     - target: {fileID: 3956298618239235109, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: _speed
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3956298618239235109, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: _damage
-      value: 1.5
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 3956298618239235109, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: _skinColor.b
-      value: 0.7075472
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3956298618239235109, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: _skinColor.g
-      value: 0.36903453
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3956298618239235109, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: _skinColor.r
@@ -74,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3956298618239235109, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: _startingHealth
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7778724557086767730, guid: 3604c15016da7bbd9a3cea846e57eef7, type: 3}
       propertyPath: m_Materials.Array.data[0]
