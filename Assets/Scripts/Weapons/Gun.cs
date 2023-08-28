@@ -13,7 +13,7 @@ public class Gun : MonoBehaviour
     private int _bulletBurstCount;
 
     [SerializeField]
-    private Transform _muzzle;
+    private Transform[] _muzzles;
 
     [SerializeField]
     private Bullet _bullet;
@@ -42,14 +42,17 @@ public class Gun : MonoBehaviour
 
     private void Shoot()
     {
-        _bulletsShot++;
-        _nextShotTime = Time.time + _msBetweenShots / 1000;
-        Bullet bullet = BulletSpawner.Instance.Get();
-        bullet.transform.SetPositionAndRotation(_muzzle.position, _muzzle.rotation);
-        bullet.Speed = _muzzleVelocity;
+        for (int i = 0; i < _muzzles.Length; i++)
+        {
+            _bulletsShot++;
+            _nextShotTime = Time.time + _msBetweenShots / 1000;
+            Bullet bullet = BulletSpawner.Instance.Get();
+            bullet.transform.SetPositionAndRotation(_muzzles[i].position, _muzzles[i].rotation);
+            bullet.Speed = _muzzleVelocity;
 
-        _shellSpawner.Emit(1);
-        _muzzleFlash.SetTrigger("Flash");
+            _shellSpawner.Emit(1);
+            _muzzleFlash.SetTrigger("Flash");
+        }
     }
 
     public void OnTriggerHold()

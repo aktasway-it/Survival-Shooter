@@ -116,6 +116,7 @@ Transform:
   - {fileID: 6551605281750286608}
   - {fileID: 7975388836531442619}
   - {fileID: 8338602782725419531}
+  - {fileID: 2269616604284296721}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-3848708645954981245
@@ -132,7 +133,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fireMode: 0
   _bulletBurstCount: 3
-  _muzzle: {fileID: 7975388836531442619}
+  _muzzles:
+  - {fileID: 7975388836531442619}
   _bullet: {fileID: 6245183620787622587, guid: 27f26af346ae6d2458dfc499aa53ebc9, type: 3}
   _msBetweenShots: 100
   _muzzleVelocity: 35
@@ -250,8 +252,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.136, z: -0.029}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2269616604284296721}
+  m_Children: []
   m_Father: {fileID: 4770802609015214653}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4887122325652856686
@@ -5377,7 +5378,7 @@ GameObject:
   - component: {fileID: 2269616604284296721}
   - component: {fileID: 9070960452688931877}
   m_Layer: 0
-  m_Name: Flash
+  m_Name: Muzzle Flash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5391,14 +5392,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8767709682878183915}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.13599998, z: -0.029000044}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5344457093846532568}
   - {fileID: 4195235088916967335}
-  m_Father: {fileID: 7975388836531442619}
+  m_Father: {fileID: 4770802609015214653}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &9070960452688931877
 Animator:

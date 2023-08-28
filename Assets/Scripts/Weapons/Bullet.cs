@@ -16,6 +16,12 @@ public class Bullet : MonoBehaviour
     private LayerMask _collisionMask;
 
     private Coroutine _deactivateCoroutine;
+    private TrailRenderer _trailRenderer;
+
+    private void Start()
+    {
+        _trailRenderer = GetComponent<TrailRenderer>();
+    }
 
     private void OnEnable()
     {
@@ -64,6 +70,7 @@ public class Bullet : MonoBehaviour
     {
         StopCoroutine(_deactivateCoroutine);
         BulletSpawner.Instance.Return(this);
+        _trailRenderer.Clear();
     }
 
     private IEnumerator DeactivateAfterSeconds(float seconds)
