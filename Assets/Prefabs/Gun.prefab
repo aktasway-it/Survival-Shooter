@@ -130,6 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 473c282a26bb3d0468c8dd44eed662cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _fireMode: 0
+  _bulletBurstCount: 3
   _muzzle: {fileID: 7975388836531442619}
   _bullet: {fileID: 6245183620787622587, guid: 27f26af346ae6d2458dfc499aa53ebc9, type: 3}
   _msBetweenShots: 100

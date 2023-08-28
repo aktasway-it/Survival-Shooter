@@ -13,7 +13,6 @@ public class Player : LivingEntity
     private GunController _gunController;
 
     private Camera _mainCamera;
-    private bool _isShooting;
     private float _campingCheckTimer;
     private Vector3 _lastCampingCheckPosition;
 
@@ -32,8 +31,6 @@ public class Player : LivingEntity
     {
         CheckCamping();
         UpdateRotation();
-        if (_isShooting)
-            _gunController.Shoot();
     }
 
     private void CheckCamping()
@@ -76,11 +73,11 @@ public class Player : LivingEntity
     {
         if (context.started)
         {
-            _isShooting = true;
+            _gunController.OnTriggerHold();
         }
         else if (context.canceled)
         {
-            _isShooting = false;
+            _gunController.OnTriggerRelease();
         }
     }
 }

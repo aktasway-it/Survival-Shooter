@@ -7,6 +7,9 @@ public class Bullet : MonoBehaviour
     public float Speed { get => _speed; set => _speed = value;}
 
     [SerializeField]
+    private float _damage = 1f;
+
+    [SerializeField]
     private float _speed = 10f;
 
     [SerializeField]
@@ -51,7 +54,7 @@ public class Bullet : MonoBehaviour
         IDamageable damageableObject = collider.GetComponent<IDamageable>();
         if (damageableObject != null)
         {
-            damageableObject.TakeHit(10, hitPoint, transform.forward);
+            damageableObject.TakeHit(_damage, hitPoint, transform.forward);
         }
 
         Dispose();
