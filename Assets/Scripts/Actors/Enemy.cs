@@ -10,17 +10,22 @@ public class Enemy : LivingEntity
     public enum State { Idle, Chasing, Attacking };
     [SerializeField]
     private float _speed = 3f;
+    
     [SerializeField]
     private float _damage = 1f;
+    
     [SerializeField]
     private float _refreshPathRate = 1f;
 
     [SerializeField]
     private float _attackDistanceThreshold = 1.5f;
+    
     [SerializeField]
     private float _timeBetweenAttacks = 1f;
+    
     [SerializeField]
     private float _attackSpeed = 3f;
+    
     [SerializeField]
     private Color _attackColor = Color.red;
 
@@ -29,7 +34,6 @@ public class Enemy : LivingEntity
     private NavMeshAgent _pathfinder;
     private Transform _target;
     private LivingEntity _targetEntity;
-    private Material _skinMaterial;
 
     private State _currentState = State.Chasing;
 
@@ -47,8 +51,6 @@ public class Enemy : LivingEntity
             _target = GameObject.FindGameObjectWithTag("Player").transform;
             _targetEntity = _target.GetComponent<LivingEntity>();
             _targetEntity.OnDeath += OnTargetDeath;
-
-            _skinMaterial = GetComponent<Renderer>().material;
 
             StartCoroutine(UpdatePath());
         }

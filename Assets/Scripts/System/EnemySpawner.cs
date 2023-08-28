@@ -32,10 +32,18 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
 
     private void Update()
     {
-        if (GameManager.Instance.Player.IsAlive && _enemyRemainingToSpawn > 0 && Time.time >= _timeToNextSpawn)
+        if (ShouldSpawn())
         {
             StartCoroutine(SpawnEnemy());
         }
+    }
+
+    private bool ShouldSpawn()
+    {
+        bool shouldSpawn = GameManager.Instance.Player.IsAlive;
+        shouldSpawn &= _enemyRemainingToSpawn > 0 || _currentWave.enemyCount == 0;
+        shouldSpawn &= Time.time >= _timeToNextSpawn;
+        return shouldSpawn;
     }
 
     private IEnumerator SpawnEnemy()

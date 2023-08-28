@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 312052459121118799}
   - component: {fileID: 8925839823888208943}
   m_Layer: 6
-  m_Name: Player Death FX
+  m_Name: Death FX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4835,7 +4835,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c801558985f90b04e98b2c87f4213dab, type: 2}
+  - {fileID: 2100000, guid: badfce734de3d0743b4a5b460d459126, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

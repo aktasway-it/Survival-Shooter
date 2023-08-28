@@ -14,12 +14,18 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
     protected float _startingHealth;
 
     [SerializeField]
+    private Color _skinColor = Color.white;
+
+    [SerializeField]
     protected ParticleSystem _deathEffectPrefab;
 
+    protected Material _skinMaterial;
 
     protected virtual void Start()
     {
         Health = _startingHealth;
+        _skinMaterial = GetComponent<Renderer>().material;
+        _skinMaterial.color = _skinColor;
     }
 
     public void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
@@ -30,7 +36,9 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
             if (_deathEffectPrefab != null)
             {
                 ParticleSystem deathEffect = Instantiate(_deathEffectPrefab, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as ParticleSystem;
-                Destroy(deathEffect.gameObject, deathEffect.main.startLifetime.constantMax);
+                var mainModule = deathEffect.main;
+                mainModule.startColor = _skinColor;
+                Destroy(deathEffect.gameObject, mainModule.startLifetime.constantMax);
             }
             Die();
         }

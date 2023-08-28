@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3956298618239235109}
   - component: {fileID: 6694743064097384908}
   m_Layer: 6
-  m_Name: Enemy
+  m_Name: Enemy Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,6 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingHealth: 5
+  _skinColor: {r: 0.08874094, g: 0.5754717, b: 0, a: 1}
   _deathEffectPrefab: {fileID: 312052459121118799, guid: 3d51eccc45a15e5459b84f2f4889eb25, type: 3}
   _speed: 3
   _damage: 1
