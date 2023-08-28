@@ -17,6 +17,8 @@ public class GameManager : SingletonBehavior<GameManager>
     void Start()
     {
         MapGenerator.Instance.GenerateMap(0);
+        Cursor.visible = false;
+        
         Player = Instantiate(_playerPrefab, MapGenerator.Instance.GetRandomTile(MapTile.Type.PlayerSpawn).transform.position, Quaternion.identity);
         Player.OnDeath += OnPlayerDeath;
 

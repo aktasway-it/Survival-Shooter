@@ -9,6 +9,9 @@ public class Player : LivingEntity
 {
     public bool IsCamping { get; private set; }
 
+    [SerializeField]
+    private Crosshair _crosshair;
+
     private PlayerController _controller;
     private GunController _gunController;
 
@@ -53,7 +56,9 @@ public class Player : LivingEntity
         if (groundPlane.Raycast(ray, out rayDistance))
         {
             Vector3 point = ray.GetPoint(rayDistance);
-            _controller.LookAt(new Vector3(point.x, transform.position.y, point.z));
+            Vector3 lookAtPoint = new Vector3(point.x, transform.position.y, point.z);
+            _controller.LookAt(lookAtPoint);
+            _crosshair.transform.position = lookAtPoint;
         }
     }
 
