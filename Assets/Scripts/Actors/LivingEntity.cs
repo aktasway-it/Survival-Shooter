@@ -14,7 +14,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
     protected float _startingHealth;
 
     [SerializeField]
-    protected GameObject _deathEffectPrefab;
+    protected ParticleSystem _deathEffectPrefab;
 
 
     protected virtual void Start()
@@ -29,8 +29,8 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
         {
             if (_deathEffectPrefab != null)
             {
-                GameObject deathEffect = Instantiate(_deathEffectPrefab, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection));
-                Destroy(deathEffect, 5f);
+                ParticleSystem deathEffect = Instantiate(_deathEffectPrefab, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as ParticleSystem;
+                Destroy(deathEffect.gameObject, deathEffect.main.startLifetime.constantMax);
             }
             Die();
         }

@@ -82,7 +82,13 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
         _enemyRemainingAlive--;
         if (_enemyRemainingAlive == 0)
         {
-            NextWave();
+            StartCoroutine(NextWaveCoroutine());
         }
+    }
+
+    private IEnumerator NextWaveCoroutine()
+    {
+        yield return new WaitForSeconds(2f);
+        NextWave();
     }
 }

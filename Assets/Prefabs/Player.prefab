@@ -242,7 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingHealth: 10
-  _deathEffectPrefab: {fileID: 5463736377445048061, guid: 62e15ade83a5f8243a3e7fde11e21dbb, type: 3}
+  _deathEffectPrefab: {fileID: 312052459121118799, guid: 62e15ade83a5f8243a3e7fde11e21dbb, type: 3}
 --- !u!114 &6339548853686678198
 MonoBehaviour:
   m_ObjectHideFlags: 0

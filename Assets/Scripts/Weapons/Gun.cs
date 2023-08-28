@@ -12,6 +12,10 @@ public class Gun : MonoBehaviour
     private float _msBetweenShots = 100f;
     [SerializeField]
     private float _muzzleVelocity = 35f;
+    [SerializeField]
+    private ParticleSystem _shellSpawner;
+    [SerializeField]
+    private Animator _muzzleFlash;
 
     private float _nextShotTime;
 
@@ -24,6 +28,9 @@ public class Gun : MonoBehaviour
             bullet.transform.position =_muzzle.position;
             bullet.transform.rotation = _muzzle.rotation;
             bullet.Speed = _muzzleVelocity;
+
+            _shellSpawner.Emit(1);
+            _muzzleFlash.SetTrigger("Flash");
         }
     }
 
