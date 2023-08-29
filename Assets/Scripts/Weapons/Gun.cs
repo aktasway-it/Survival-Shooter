@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Gun : MonoBehaviour
 {
@@ -36,6 +37,15 @@ public class Gun : MonoBehaviour
 
     [SerializeField]
     private Animator _muzzleFlash;
+
+    [SerializeField]
+    private AudioClip _shootSfx;
+
+    [SerializeField]
+    private AudioClip _reloadSfx;
+
+    [SerializeField]
+    private AudioMixerGroup _audioMixerGroup;
 
     private Animator _animator;
     private float _nextShotTime;
@@ -74,9 +84,11 @@ public class Gun : MonoBehaviour
             bullet.Speed = _muzzleVelocity;
 
             _shellSpawner.Emit(1);
-            _animator.SetTrigger("Shoot");
-            _muzzleFlash.SetTrigger("Flash");
         }
+
+        _animator.SetTrigger("Shoot");
+        _muzzleFlash.SetTrigger("Flash");
+        AudioManager.Instance.Play(_shootSfx, audioMixerGroup: _audioMixerGroup, position: transform.position);
     }
 
     public void Reload()
@@ -95,6 +107,8 @@ public class Gun : MonoBehaviour
         float reloadSpeed = 1 / _reloadTime;
         float percent = 0;
         Vector3 initialRotation = transform.localEulerAngles;
+
+        AudioManager.Instance.Play(_reloadSfx, audioMixerGroup: _audioMixerGroup, position: transform.position);
 
         while (percent < 1)
         {

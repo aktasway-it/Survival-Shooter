@@ -21,6 +21,9 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
     [SerializeField]
     private Wave[] _waves;
 
+    [SerializeField]
+    private AudioClip _waveCompletedSfx;
+
     private Wave _currentWave;
     private int _currentWaveIndex = -1;
     private int _enemyRemainingToSpawn;
@@ -98,6 +101,8 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
 
     private IEnumerator NextWaveCoroutine()
     {
+        yield return new WaitForSeconds(1f);
+        AudioManager.Instance.Play(_waveCompletedSfx);
         yield return new WaitForSeconds(2f);
         NextWave();
     }

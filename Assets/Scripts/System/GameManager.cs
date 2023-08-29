@@ -30,6 +30,8 @@ public class GameManager : SingletonBehavior<GameManager>
 
         EnemySpawner.Instance.StartSpawning();
         EnemySpawner.OnNewWave += OnNewWave;
+
+        AudioManager.Instance.PlayGameMusic();
     }
 
     private void OnNewWave(int waveIndex)
@@ -45,5 +47,7 @@ public class GameManager : SingletonBehavior<GameManager>
 
         UIManager.Instance.ShowGameOverScreen();
         Cursor.visible = true;
+
+        AudioManager.Instance.PlayThemeMusic();
     }
 }

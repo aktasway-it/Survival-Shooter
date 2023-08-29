@@ -125,6 +125,8 @@ MonoBehaviour:
   _startingHealth: 4
   _skinColor: {r: 0.08874094, g: 0.5754717, b: 0, a: 1}
   _deathEffectPrefab: {fileID: 312052459121118799, guid: 3d51eccc45a15e5459b84f2f4889eb25, type: 3}
+  _deathSfx: {fileID: 8300000, guid: 5a9a8e0a7a941bf4ca6e37b80cc1458d, type: 3}
+  _audioMixerGroup: {fileID: -6216342116440682925, guid: 82745cdc6eafae04cb6eed9d47d5de5d, type: 2}
   _speed: 3
   _damage: 1
   _refreshPathRate: 0.25
@@ -132,6 +134,11 @@ MonoBehaviour:
   _timeBetweenAttacks: 1
   _attackSpeed: 3
   _attackColor: {r: 1, g: 0, b: 0, a: 1}
+  _attackSfx: {fileID: 8300000, guid: 84ea3398ad90b6d45b8b82a0c002d469, type: 3}
+  _hitSfx:
+  - {fileID: 8300000, guid: 931fbe681e8ee4445aeb1be2e713c806, type: 3}
+  - {fileID: 8300000, guid: 1f8e3daa76d2f7d4d978f2e29a462745, type: 3}
+  - {fileID: 8300000, guid: 8732ba7ddac4b1146a66b77227ae2aac, type: 3}
 --- !u!195 &6694743064097384908
 NavMeshAgent:
   m_ObjectHideFlags: 0

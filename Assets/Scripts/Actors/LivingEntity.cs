@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public abstract class LivingEntity : MonoBehaviour, IDamageable
 {
@@ -19,6 +20,12 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
     [SerializeField]
     protected ParticleSystem _deathEffectPrefab;
 
+    [SerializeField]
+    protected AudioClip _deathSfx;
+
+    [SerializeField]
+    protected AudioMixerGroup _audioMixerGroup;
+
     protected Material _skinMaterial;
 
     protected virtual void Start()
@@ -28,7 +35,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
         _skinMaterial.color = _skinColor;
     }
 
-    public void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
+    public virtual void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {
         Health -= damage;
         if (Health <= 0)
@@ -40,6 +47,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
                 mainModule.startColor = _skinColor;
                 Destroy(deathEffect.gameObject, mainModule.startLifetime.constantMax);
             }
+
             Die();
         }
     }
@@ -47,6 +55,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
     protected virtual void Die()
     {
         OnDeath?.Invoke();
+        AudioManager.Instance.Play(_deathSfx, audioMixerGroup: _audioMixerGroup, position: transform.position, maxDistance: 20f);
         Destroy(gameObject);
     }
 }

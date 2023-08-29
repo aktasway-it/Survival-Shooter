@@ -137,10 +137,15 @@ MonoBehaviour:
   _muzzles:
   - {fileID: 7975388836531442619}
   _bullet: {fileID: 6245183620787622587, guid: 27f26af346ae6d2458dfc499aa53ebc9, type: 3}
+  _magazineSize: 10
+  _reloadTime: 0.3
   _msBetweenShots: 100
   _muzzleVelocity: 35
   _shellSpawner: {fileID: 5894506986103746470}
   _muzzleFlash: {fileID: 9070960452688931877}
+  _shootSfx: {fileID: 8300000, guid: 3bc31399b5bdff84aaec947d66443ec2, type: 3}
+  _reloadSfx: {fileID: 8300000, guid: 744e7a2b97db4624494d4666e0e58396, type: 3}
+  _audioMixerGroup: {fileID: 171307269071924543, guid: 82745cdc6eafae04cb6eed9d47d5de5d, type: 2}
 --- !u!95 &4338396723784989345
 Animator:
   serializedVersion: 5

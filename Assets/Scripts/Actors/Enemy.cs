@@ -29,6 +29,12 @@ public class Enemy : LivingEntity
     [SerializeField]
     private Color _attackColor = Color.red;
 
+    [SerializeField]
+    private AudioClip _attackSfx;
+
+    [SerializeField]
+    private AudioClip[] _hitSfx;
+
     private float _nextAttackTime;
 
     private NavMeshAgent _pathfinder;
@@ -102,6 +108,14 @@ public class Enemy : LivingEntity
         return false;
     }
 
+    public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
+    {
+        base.TakeHit(damage, hitPoint, hitDirection);
+
+        if (IsAlive)
+            AudioManager.Instance.Play(_hitSfx[Random.Range(0, _hitSfx.Length)], audioMixerGroup: _audioMixerGroup, position: hitPoint, maxDistance: 20f);
+    }
+
     private IEnumerator Attack()
     {
         _currentState = State.Attacking;
@@ -115,6 +129,8 @@ public class Enemy : LivingEntity
 
         float percent = 0f;
         bool hasAppliedDamage = false;
+
+        AudioManager.Instance.Play(_attackSfx, audioMixerGroup: _audioMixerGroup, position: transform.position);
 
         while (percent <= 1f)
         {
