@@ -7,16 +7,30 @@ using UnityEngine.SceneManagement;
 public class UIManager : SingletonBehavior<UIManager>
 {
     [SerializeField]
+    private GameObject _mainMenu;
+
+    [SerializeField]
     private CanvasGroup _gameOverCanvasGroup;
 
     [SerializeField]
     private NewWaveBanner _newWaveBanner;
 
-    private void OnEnable() {
+    private void Start()
+    {
+        if (PlayerPrefs.GetInt("Replay") == 1)
+        {
+            PlayerPrefs.SetInt("Replay", 0);
+            OnPlayButtonClicked();
+        }
+    }
+
+    private void OnEnable()
+    {
         EnemySpawner.OnNewWave += OnNewWave;
     }
 
-    private void OnDisable() {
+    private void OnDisable()
+    {
         EnemySpawner.OnNewWave -= OnNewWave;
     }
 
@@ -30,8 +44,15 @@ public class UIManager : SingletonBehavior<UIManager>
         StartCoroutine(ShowGameOverScreenCoroutine());
     }
 
+    public void OnPlayButtonClicked()
+    {
+        _mainMenu.SetActive(false);
+        GameManager.Instance.StartGame();
+    }
+
     public void OnRestartButtonClicked()
     {
+        PlayerPrefs.SetInt("Replay", 1);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

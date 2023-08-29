@@ -13,25 +13,19 @@ public class GameManager : SingletonBehavior<GameManager>
 
     [SerializeField]
     private CinemachineVirtualCamera _cinemachineVirtualCamera;
+    private GameObject _audioListener;
 
     void Start()
     {
-        MapGenerator.Instance.GenerateMap(0);
-        Cursor.visible = false;
-        
-        Player = Instantiate(_playerPrefab, MapGenerator.Instance.GetRandomTile(MapTile.Type.PlayerSpawn).transform.position, Quaternion.identity);
-        Player.OnDeath += OnPlayerDeath;
+        _audioListener = new GameObject("Audio Listener");
+        _audioListener.AddComponent<AudioListener>();
 
+        AudioManager.Instance.PlayThemeMusic();
+
+        MapGenerator.Instance.GenerateMap(0);
         // Set camera distance
         CinemachineFramingTransposer transposer = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         transposer.m_CameraDistance = MapGenerator.Instance.WorldSize.x * 0.5f;
-        _cinemachineVirtualCamera.Follow = Player.transform;
-        _cinemachineVirtualCamera.LookAt = Player.transform;
-
-        EnemySpawner.Instance.StartSpawning();
-        EnemySpawner.OnNewWave += OnNewWave;
-
-        AudioManager.Instance.PlayGameMusic();
     }
 
     private void OnNewWave(int waveIndex)
@@ -42,6 +36,8 @@ public class GameManager : SingletonBehavior<GameManager>
 
     private void OnPlayerDeath()
     {
+        _audioListener.transform.SetParent(null);
+        
         Player.OnDeath -= OnPlayerDeath;
         EnemySpawner.OnNewWave -= OnNewWave;
 
@@ -49,5 +45,24 @@ public class GameManager : SingletonBehavior<GameManager>
         Cursor.visible = true;
 
         AudioManager.Instance.PlayThemeMusic();
+    }
+
+    public void StartGame()
+    {
+        Cursor.visible = false;
+        
+        Player = Instantiate(_playerPrefab, MapGenerator.Instance.GetRandomTile(MapTile.Type.PlayerSpawn).transform.position, Quaternion.identity);
+        Player.OnDeath += OnPlayerDeath;
+
+        _audioListener.transform.position = Player.transform.position;
+        _audioListener.transform.SetParent(Player.transform);
+
+        _cinemachineVirtualCamera.Follow = Player.transform;
+        _cinemachineVirtualCamera.LookAt = Player.transform;
+
+        EnemySpawner.Instance.StartSpawning();
+        EnemySpawner.OnNewWave += OnNewWave;
+
+        AudioManager.Instance.PlayGameMusic();
     }
 }

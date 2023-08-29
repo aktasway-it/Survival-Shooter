@@ -52,7 +52,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
         }
     }
 
-    protected virtual void Die()
+    protected void Die()
     {
         OnDeath?.Invoke();
         AudioManager.Instance.Play(_deathSfx, audioMixerGroup: _audioMixerGroup, position: transform.position, maxDistance: 20f);

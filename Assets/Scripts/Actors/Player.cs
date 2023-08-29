@@ -13,9 +13,6 @@ public class Player : LivingEntity
     [SerializeField]
     private Crosshair _crosshair;
 
-    [SerializeField]
-    private Transform _audioListener;
-
     private PlayerController _controller;
     private GunController _gunController;
 
@@ -110,11 +107,5 @@ public class Player : LivingEntity
         {
             _gunController.Reload();
         }
-    }
-
-    protected override void Die()
-    {
-        _audioListener.parent = null;
-        base.Die();
     }
 }

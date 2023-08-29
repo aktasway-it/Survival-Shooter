@@ -29,15 +29,17 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
     private int _enemyRemainingToSpawn;
     private int _enemyRemainingAlive;
     private float _timeToNextSpawn;
+    private bool _spawningStarted;
 
     public void StartSpawning()
     {
+        _spawningStarted = true;
         NextWave();
     }
 
     private void Update()
     {
-        if (ShouldSpawn())
+        if (_spawningStarted && ShouldSpawn())
         {
             StartCoroutine(SpawnEnemy());
         }
