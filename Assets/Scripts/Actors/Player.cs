@@ -85,4 +85,12 @@ public class Player : LivingEntity
             _gunController.OnTriggerRelease();
         }
     }
+
+    public void OnReload(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            _gunController.Reload();
+        }
+    }
 }

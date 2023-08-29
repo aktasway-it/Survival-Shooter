@@ -38,4 +38,10 @@ public class GunController : MonoBehaviour
         if (_equippedGun != null)
             _equippedGun.OnTriggerRelease();
     }
+
+    public void Reload()
+    {
+        if (_equippedGun != null)
+            _equippedGun.Reload();
+    }
 }

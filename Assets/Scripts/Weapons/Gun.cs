@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,12 @@ public class Gun : MonoBehaviour
     private Bullet _bullet;
 
     [SerializeField]
+    private int _magazineSize = 10;
+
+    [SerializeField]
+    private float _reloadTime = 0.3f;
+
+    [SerializeField]
     private float _msBetweenShots = 100f;
 
     [SerializeField]
@@ -34,17 +41,24 @@ public class Gun : MonoBehaviour
     private float _nextShotTime;
     private int _bulletsShot;
     private bool _triggerPulled;
+    private int _magazineRemainingBullets;
+    private bool _isReloading;
 
     private void Start()
     {
         _animator = GetComponent<Animator>();
+        _magazineRemainingBullets = _magazineSize;
     }
 
     private void Update()
     {
-        if (_triggerPulled && CanShoot())
-            Shoot();
-
+        if (_triggerPulled)
+        {
+            if (CanShoot())
+                Shoot();
+            else if (!HasBullets())
+                Reload();
+        }
     }
 
     private void Shoot()
@@ -52,6 +66,8 @@ public class Gun : MonoBehaviour
         for (int i = 0; i < _muzzles.Length; i++)
         {
             _bulletsShot++;
+            _magazineRemainingBullets--;
+
             _nextShotTime = Time.time + _msBetweenShots / 1000;
             Bullet bullet = BulletSpawner.Instance.Get();
             bullet.transform.SetPositionAndRotation(_muzzles[i].position, _muzzles[i].rotation);
@@ -61,6 +77,38 @@ public class Gun : MonoBehaviour
             _animator.SetTrigger("Shoot");
             _muzzleFlash.SetTrigger("Flash");
         }
+    }
+
+    public void Reload()
+    {
+        if (_isReloading || _magazineRemainingBullets == _magazineSize)
+            return;
+
+        StartCoroutine(ReloadRoutine());
+    }
+
+    private IEnumerator ReloadRoutine()
+    {
+        _isReloading = true;
+        yield return new WaitForSeconds(0.2f);
+
+        float reloadSpeed = 1 / _reloadTime;
+        float percent = 0;
+        Vector3 initialRotation = transform.localEulerAngles;
+
+        while (percent < 1)
+        {
+            percent += Time.deltaTime * reloadSpeed;
+            float interpolation = (-Mathf.Pow(percent, 2) + percent) * 4;
+            float reloadAngle = Mathf.Lerp(0, -80, interpolation);
+
+            transform.localEulerAngles = new Vector3(reloadAngle, 0, 0);
+            yield return null;
+        }
+
+        transform.localEulerAngles = initialRotation;
+        _isReloading = false;
+        _magazineRemainingBullets = _magazineSize;
     }
 
     public void OnTriggerHold()
@@ -74,9 +122,15 @@ public class Gun : MonoBehaviour
         _bulletsShot = 0;
     }
 
+    private bool HasBullets()
+    {
+        return _magazineRemainingBullets > 0;
+    }
+
     private bool CanShoot()
     {
         bool canShoot = Time.time > _nextShotTime;
+        canShoot &= HasBullets();
         canShoot &= _fireMode == FireMode.Auto || (_fireMode == FireMode.Burst && _bulletsShot < _bulletBurstCount) || (_fireMode == FireMode.Single && _bulletsShot == 0);
         return canShoot;
     }
