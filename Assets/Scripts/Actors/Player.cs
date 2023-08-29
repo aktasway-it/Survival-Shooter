@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,20 @@ public class Player : LivingEntity
         _mainCamera = Camera.main;
 
         _lastCampingCheckPosition = transform.position;
+
+        EnemySpawner.OnNewWave += OnNewWave;
+    }
+
+    private void OnDestroy()
+    {
+        EnemySpawner.OnNewWave -= OnNewWave;
+    }
+
+    private void OnNewWave(int waveNumber)
+    {
+        Health = _startingHealth;
+        _lastCampingCheckPosition = transform.position;
+        _campingCheckTimer = 0;
     }
 
     private void Update()

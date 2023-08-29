@@ -16,6 +16,8 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
         public Enemy enemyPrefab;
     }
 
+    public int CurrentWaveEnemyCount => _currentWave.enemyCount;
+
     [SerializeField]
     private Wave[] _waves;
 

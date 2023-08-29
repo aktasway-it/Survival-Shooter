@@ -44,5 +44,6 @@ public class GameManager : SingletonBehavior<GameManager>
         EnemySpawner.OnNewWave -= OnNewWave;
 
         UIManager.Instance.ShowGameOverScreen();
+        Cursor.visible = true;
     }
 }

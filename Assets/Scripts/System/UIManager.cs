@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,22 @@ public class UIManager : SingletonBehavior<UIManager>
 {
     [SerializeField]
     private CanvasGroup _gameOverCanvasGroup;
+
+    [SerializeField]
+    private NewWaveBanner _newWaveBanner;
+
+    private void OnEnable() {
+        EnemySpawner.OnNewWave += OnNewWave;
+    }
+
+    private void OnDisable() {
+        EnemySpawner.OnNewWave -= OnNewWave;
+    }
+
+    private void OnNewWave(int waveIndex)
+    {
+        _newWaveBanner.Show(waveIndex, EnemySpawner.Instance.CurrentWaveEnemyCount);
+    }
 
     public void ShowGameOverScreen()
     {
