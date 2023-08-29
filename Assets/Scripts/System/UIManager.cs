@@ -15,12 +15,19 @@ public class UIManager : SingletonBehavior<UIManager>
     [SerializeField]
     private NewWaveBanner _newWaveBanner;
 
+    [SerializeField]
+    private PlayerHealthBar _playerHealthBar;
+
     private void Start()
     {
         if (PlayerPrefs.GetInt("Replay") == 1)
         {
             PlayerPrefs.SetInt("Replay", 0);
             OnPlayButtonClicked();
+        }
+        else
+        {
+            _mainMenu.SetActive(true);
         }
     }
 
@@ -48,6 +55,7 @@ public class UIManager : SingletonBehavior<UIManager>
     {
         _mainMenu.SetActive(false);
         GameManager.Instance.StartGame();
+        _playerHealthBar.AttachPlayer(GameManager.Instance.Player);
     }
 
     public void OnRestartButtonClicked()

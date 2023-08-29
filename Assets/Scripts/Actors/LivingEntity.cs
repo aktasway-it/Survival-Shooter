@@ -7,8 +7,18 @@ using UnityEngine.Audio;
 public abstract class LivingEntity : MonoBehaviour, IDamageable
 {
     public event Action OnDeath;
+    public event Action<float> OnHealthChanged;
 
-    public float Health { get; protected set; }
+    public float MaxHealth => _startingHealth;
+    public float Health
+    {
+        get { return _health; }
+        protected set 
+        {
+            _health = Mathf.Clamp(value, 0, _startingHealth);
+            OnHealthChanged?.Invoke(_health);
+        }
+    }
     public bool IsAlive { get { return Health > 0; } }
 
     [SerializeField]
@@ -27,6 +37,7 @@ public abstract class LivingEntity : MonoBehaviour, IDamageable
     protected AudioMixerGroup _audioMixerGroup;
 
     protected Material _skinMaterial;
+    protected float _health;
 
     protected virtual void Start()
     {
