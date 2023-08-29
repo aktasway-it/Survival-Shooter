@@ -30,14 +30,21 @@ public class Gun : MonoBehaviour
     [SerializeField]
     private Animator _muzzleFlash;
 
+    private Animator _animator;
     private float _nextShotTime;
     private int _bulletsShot;
     private bool _triggerPulled;
+
+    private void Start()
+    {
+        _animator = GetComponent<Animator>();
+    }
 
     private void Update()
     {
         if (_triggerPulled && CanShoot())
             Shoot();
+
     }
 
     private void Shoot()
@@ -51,6 +58,7 @@ public class Gun : MonoBehaviour
             bullet.Speed = _muzzleVelocity;
 
             _shellSpawner.Emit(1);
+            _animator.SetTrigger("Shoot");
             _muzzleFlash.SetTrigger("Flash");
         }
     }
