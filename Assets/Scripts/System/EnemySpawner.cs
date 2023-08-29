@@ -6,6 +6,7 @@ using UnityEngine;
 public class EnemySpawner : SingletonBehavior<EnemySpawner>
 {
     public static event Action<int> OnNewWave;
+    public static event Action OnEnemyDeath;
 
     [Serializable]
     public class Wave
@@ -17,6 +18,7 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
     }
 
     public int CurrentWaveEnemyCount => _currentWave.enemyCount;
+    public int CurrentWaveIndex => _currentWaveIndex;
 
     [SerializeField]
     private Wave[] _waves;
@@ -73,7 +75,7 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
         }
 
         Enemy spawnedEnemy = Instantiate(_currentWave.enemyPrefab, spawnTile.transform.position, Quaternion.identity);
-        spawnedEnemy.OnDeath += OnEnemyDeath;
+        spawnedEnemy.OnDeath += OnSpawnedEnemyDeath;
         spawnTile.SetBlinkAnimationRunning(false);
     }
 
@@ -92,9 +94,10 @@ public class EnemySpawner : SingletonBehavior<EnemySpawner>
         }
     }
 
-    private void OnEnemyDeath()
+    private void OnSpawnedEnemyDeath()
     {
         _enemyRemainingAlive--;
+        OnEnemyDeath?.Invoke();
         if (_enemyRemainingAlive == 0)
         {
             StartCoroutine(NextWaveCoroutine());

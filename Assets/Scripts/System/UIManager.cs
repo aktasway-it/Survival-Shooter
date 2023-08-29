@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,6 +16,9 @@ public class UIManager : SingletonBehavior<UIManager>
     [SerializeField]
     private NewWaveBanner _newWaveBanner;
 
+    [SerializeField]
+    private TextMeshProUGUI _playerScoreText;
+    
     [SerializeField]
     private PlayerHealthBar _playerHealthBar;
 
@@ -34,11 +38,18 @@ public class UIManager : SingletonBehavior<UIManager>
     private void OnEnable()
     {
         EnemySpawner.OnNewWave += OnNewWave;
+        GameManager.OnScoreUpdated += OnScoreUpdated;
     }
 
     private void OnDisable()
     {
         EnemySpawner.OnNewWave -= OnNewWave;
+        GameManager.OnScoreUpdated -= OnScoreUpdated;
+    }
+
+    private void OnScoreUpdated(int score)
+    {
+        _playerScoreText.text = score.ToString("D8");
     }
 
     private void OnNewWave(int waveIndex)
@@ -55,6 +66,7 @@ public class UIManager : SingletonBehavior<UIManager>
     {
         _mainMenu.SetActive(false);
         GameManager.Instance.StartGame();
+        _playerScoreText.gameObject.SetActive(true);
         _playerHealthBar.AttachPlayer(GameManager.Instance.Player);
     }
 

@@ -6,7 +6,9 @@ using UnityEngine;
 
 public class GameManager : SingletonBehavior<GameManager>
 {
+    public static event Action<int> OnScoreUpdated;
     public Player Player { get; private set; }
+    public int Score { get; private set; }
 
     [SerializeField]
     private Player _playerPrefab;
@@ -37,7 +39,7 @@ public class GameManager : SingletonBehavior<GameManager>
     private void OnPlayerDeath()
     {
         _audioListener.transform.SetParent(null);
-        
+
         Player.OnDeath -= OnPlayerDeath;
         EnemySpawner.OnNewWave -= OnNewWave;
 
@@ -62,7 +64,14 @@ public class GameManager : SingletonBehavior<GameManager>
 
         EnemySpawner.Instance.StartSpawning();
         EnemySpawner.OnNewWave += OnNewWave;
+        EnemySpawner.OnEnemyDeath += OnEnemyDeath;
 
         AudioManager.Instance.PlayGameMusic();
+    }
+
+    private void OnEnemyDeath()
+    {
+        Score += (EnemySpawner.Instance.CurrentWaveIndex + 1) * 40;
+        OnScoreUpdated?.Invoke(Score);
     }
 }

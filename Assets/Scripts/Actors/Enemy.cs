@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 public class Enemy : LivingEntity
 {
+    public int Score => (int) (MaxHealth + _damage + _speed);
     private bool HasTarget { get { return _target != null; } }
 
     public enum State { Idle, Chasing, Attacking };
