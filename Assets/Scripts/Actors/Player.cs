@@ -47,8 +47,16 @@ public class Player : LivingEntity
 
     private void Update()
     {
-        CheckCamping();
-        UpdateRotation();
+        if (IsAlive)
+        {
+            CheckCamping();
+            UpdateRotation();
+
+            if (transform.position.y < -10)
+            {
+                TakeHit(Health, transform.position, Vector3.zero);
+            }
+        }
     }
 
     private void CheckCamping()

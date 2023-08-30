@@ -14,6 +14,9 @@ public class UIManager : SingletonBehavior<UIManager>
     private CanvasGroup _gameOverCanvasGroup;
 
     [SerializeField]
+    private TextMeshProUGUI _gameOverScoreText;
+
+    [SerializeField]
     private NewWaveBanner _newWaveBanner;
 
     [SerializeField]
@@ -78,6 +81,8 @@ public class UIManager : SingletonBehavior<UIManager>
 
     private IEnumerator ShowGameOverScreenCoroutine()
     {
+        _playerScoreText.gameObject.SetActive(false);
+        _gameOverScoreText.text = "Score: " + GameManager.Instance.Score.ToString();
         yield return new WaitForSeconds(2);
         _gameOverCanvasGroup.gameObject.SetActive(true);
         _gameOverCanvasGroup.interactable = true;

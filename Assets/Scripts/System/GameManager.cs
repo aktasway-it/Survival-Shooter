@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class GameManager : SingletonBehavior<GameManager>
 {
+    public static event Action OnGameStarted;
     public static event Action<int> OnScoreUpdated;
     public Player Player { get; private set; }
     public int Score { get; private set; }
@@ -67,6 +68,7 @@ public class GameManager : SingletonBehavior<GameManager>
         EnemySpawner.OnEnemyDeath += OnEnemyDeath;
 
         AudioManager.Instance.PlayGameMusic();
+        OnGameStarted?.Invoke();
     }
 
     private void OnEnemyDeath()

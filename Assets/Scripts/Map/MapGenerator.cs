@@ -20,6 +20,9 @@ public class MapGenerator : SingletonBehavior<MapGenerator>
     [SerializeField]
     private float _tileSize = 1;
 
+    [SerializeField]
+    private bool _useRandomSeed;
+
     [SerializeField][Range(0, 1)]
     private float _outlinePercent;
 
@@ -48,6 +51,9 @@ public class MapGenerator : SingletonBehavior<MapGenerator>
     {
         // Generate a new map and destroy old one if it exists
         _currentMap = _maps[_currentMapIndex];
+        if (_useRandomSeed)
+            _currentMap.seed = (int) Time.time;
+
         Random random = new Random(_maps[_currentMapIndex].seed);
 
         Transform oldMap = transform.Find("Generated Map");
